@@ -22,54 +22,6 @@ cd TrustUp-Frontend
 npm install
 ```
 
-### 3. Environment Configuration
-
-Copy the example environment file:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and configure the following variables:
-```env
-# ===========================================
-# API CONFIGURATION
-# ===========================================
-
-# Production API
-EXPO_PUBLIC_API_URL=https://api.trustup.app/api/v1
-
-# Local development (uncomment to use)
-# EXPO_PUBLIC_API_URL=http://localhost:4000/api/v1
-
-# ===========================================
-# STELLAR CONFIGURATION
-# ===========================================
-
-# Network: testnet or mainnet
-EXPO_PUBLIC_STELLAR_NETWORK=testnet
-
-# Horizon API URL
-EXPO_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
-
-# Soroban RPC URL
-EXPO_PUBLIC_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-
-# ===========================================
-# FEATURE FLAGS (Optional)
-# ===========================================
-
-EXPO_PUBLIC_ENABLE_NOTIFICATIONS=true
-EXPO_PUBLIC_ENABLE_ANALYTICS=false
-EXPO_PUBLIC_ENABLE_BIOMETRICS=true
-
-# ===========================================
-# DEVELOPMENT
-# ===========================================
-
-# Enable debug mode
-EXPO_PUBLIC_DEBUG_MODE=true
-```
-
 ### 4. Backend API Setup
 
 This frontend connects to the [TrustUp API](https://github.com/TrustUp-app/TrustUp-API) backend.
@@ -373,9 +325,10 @@ components/
 ├── shared/           # Reusable across entire app
 │   ├── Button.tsx
 │   └── Input.tsx
-└── loans/           # Domain-specific components
-    ├── LoanCard.tsx
-    └── LoanList.tsx
+└── LoanScreen/           # Domain-specific components
+    └── LoanScreen.tsx
+    ├── components.tsx
+    └── LoanCard.tsx
 ```
 
 ### TypeScript
@@ -528,8 +481,6 @@ npx tsc --noEmit
 ## Getting Help
 
 - 📖 Check [documentation](./docs/)
-- 🐛 [Open an issue](https://github.com/TrustUp-app/TrustUp-Frontend/issues)
-- 💬 [GitHub Discussions](https://github.com/TrustUp-app/TrustUp-Frontend/discussions)
 - 🔗 [Backend API Docs](https://github.com/TrustUp-app/TrustUp-API)
 - 📱 [Expo Documentation](https://docs.expo.dev/)
 - ⚛️ [React Native Documentation](https://reactnative.dev/)
