@@ -250,8 +250,8 @@ cd android && ./gradlew clean && cd ..
 ## 📞 Support
 
 - 📖 [Documentation](./docs/)
-- 🐛 [Issue Tracker](https://github.com/TrustUp-app/TrustUp-Mobile/issues)
-- 💬 [Discussions](https://github.com/TrustUp-app/TrustUp-Mobile/discussions)
+- 🐛 [Issue Tracker](https://github.com/TrustUp-app/TrustUp-Frontend/issues)
+- 💬 [Discussions](https://github.com/TrustUp-app/TrustUp-Frontend/discussions)
 - 🔗 [Backend API](https://github.com/TrustUp-app/TrustUp-API)
 
 ## 🙏 Acknowledgments
