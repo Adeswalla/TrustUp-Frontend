@@ -17,6 +17,8 @@ const CreateAccountScreen = ({ navigation }: any) => {
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [errors, setErrors] = useState({
     walletAddress: '',
@@ -48,23 +50,34 @@ const CreateAccountScreen = ({ navigation }: any) => {
 
     if (!result.canceled && result.assets && result.assets[0]) {
       const imageUri = result.assets[0].uri;
-      const response = await fetch(imageUri);
-      const blob = await response.blob();
-      const sizeInMB = blob.size / (1024 * 1024);
 
-      if (sizeInMB > 2) {
-        setErrors({ ...errors, profileImage: 'File size must be less than 2MB' });
-        return;
+      try {
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        const sizeInMB = blob.size / (1024 * 1024);
+
+        // Validate file size
+        if (sizeInMB > 2) {
+          setErrors({ ...errors, profileImage: 'File size must be less than 2MB' });
+          return;
+        }
+
+        // Validate file type using blob.type (more reliable in web)
+        const blobType = blob.type.toLowerCase();
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+        if (!validTypes.includes(blobType)) {
+          setErrors({ ...errors, profileImage: 'Only JPG, PNG, and WebP formats are allowed' });
+          return;
+        }
+
+        // All validations passed
+        setErrors({ ...errors, profileImage: '' });
+        setProfileImage(imageUri);
+      } catch (error) {
+        console.error('Error processing image:', error);
+        setErrors({ ...errors, profileImage: 'Error processing image' });
       }
-
-      const fileType = result.assets[0].type || result.assets[0].uri.split('.').pop()?.toLowerCase();
-      if (!['jpg', 'jpeg', 'png', 'webp', 'image/jpeg', 'image/png', 'image/webp'].includes(fileType || '')) {
-        setErrors({ ...errors, profileImage: 'Only JPG, PNG, and WebP formats are allowed' });
-        return;
-      }
-
-      setErrors({ ...errors, profileImage: '' });
-      setProfileImage(imageUri);
     }
   };
 
@@ -97,29 +110,57 @@ const CreateAccountScreen = ({ navigation }: any) => {
   };
 
   const isFormValid = () => {
+    // Profile image is optional, but if there's an error with uploaded image, block submission
+    const hasImageError = errors.profileImage !== '';
+
     return (
-      walletAddress &&
+      walletAddress.trim() !== '' &&
       validateWalletAddress(walletAddress) &&
       username.length >= 3 &&
       displayName.length >= 2 &&
       termsAccepted &&
-      !errors.walletAddress &&
-      !errors.username &&
-      !errors.displayName &&
-      !errors.profileImage
+      errors.walletAddress === '' &&
+      errors.username === '' &&
+      errors.displayName === '' &&
+      !hasImageError
     );
   };
 
   const handleCreateAccount = () => {
     if (isFormValid()) {
-      console.log({
+      setIsSubmitting(true);
+
+      const accountData = {
         profileImage,
         walletAddress,
         username,
         displayName,
         termsAccepted,
-      });
-      Alert.alert('Success', 'Account created successfully! (Console logged)');
+      };
+
+      console.log('✅ Account Created Successfully:', accountData);
+
+      // Show success notification
+      setShowSuccess(true);
+
+      // Simulate account creation delay
+      setTimeout(() => {
+        setIsSubmitting(false);
+
+        Alert.alert(
+          '✅ Account Created!',
+          `Welcome, ${displayName}!\n\nYour account has been created successfully.\n\nUsername: @${username}\nWallet: ${walletAddress.substring(0, 10)}...`,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                setShowSuccess(false);
+                console.log('Account creation confirmed');
+              },
+            },
+          ]
+        );
+      }, 500);
     }
   };
 
@@ -263,20 +304,48 @@ const CreateAccountScreen = ({ navigation }: any) => {
           {/* Create Account Button */}
           <TouchableOpacity
             onPress={handleCreateAccount}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || isSubmitting}
             className={`rounded-xl py-4 items-center flex-row justify-center ${
-              isFormValid() ? 'bg-[#FF9C6E]' : 'bg-gray-300'
+              isFormValid() && !isSubmitting ? 'bg-[#FF9C6E]' : 'bg-gray-300'
             }`}
             activeOpacity={0.8}
             accessibilityLabel="Create account button"
           >
-            <Text className={`font-semibold text-base mr-2 ${isFormValid() ? 'text-white' : 'text-gray-500'}`}>
-              Create Account
-            </Text>
-            <Ionicons name="arrow-forward" size={18} color={isFormValid() ? 'white' : '#6B7280'} />
+            {isSubmitting ? (
+              <>
+                <Text className="font-semibold text-base mr-2 text-white">
+                  Creating Account...
+                </Text>
+                <Ionicons name="hourglass" size={18} color="white" />
+              </>
+            ) : (
+              <>
+                <Text className={`font-semibold text-base mr-2 ${isFormValid() ? 'text-white' : 'text-gray-500'}`}>
+                  Create Account
+                </Text>
+                <Ionicons name="arrow-forward" size={18} color={isFormValid() ? 'white' : '#6B7280'} />
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Success Notification */}
+      {showSuccess && (
+        <View className="absolute top-20 left-6 right-6 bg-[#10B981] rounded-xl shadow-lg p-4 flex-row items-center">
+          <View className="w-10 h-10 bg-white rounded-full items-center justify-center mr-3">
+            <Ionicons name="checkmark-circle" size={28} color="#10B981" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-base mb-1">
+              Account Created Successfully!
+            </Text>
+            <Text className="text-white text-sm">
+              Welcome to TrustUp, @{username}
+            </Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
