@@ -240,7 +240,7 @@ const InvestScreen = () => {
           {/* Deposit Button */}
           <TouchableOpacity
             className={`py-4 rounded-2xl items-center ${
-              isDepositValid() ? 'bg-[#FF8C42]' : 'bg-gray-300'
+              isDepositValid() ? 'bg-[#FF9C42]' : 'bg-[#FF9C6E]'
             }`}
             onPress={handleDeposit}
             disabled={!isDepositValid()}
@@ -249,7 +249,7 @@ const InvestScreen = () => {
             accessibilityHint={!isDepositValid() ? "Minimum $10 required" : undefined}
           >
             <Text className={`font-semibold text-base ${
-              isDepositValid() ? 'text-white' : 'text-gray-500'
+              isDepositValid() ? 'text-white' : 'text-gray-200'
             }`}>
               Deposit funds
             </Text>
